@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Interactive Map – U.S. Environmental & Military Programs</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+ integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+<style>
+  html, body, #map { height: 100%; margin: 0; }
+  .legend { background:white; padding:8px 10px; line-height:1.4; box-shadow:0 0 8px rgba(0,0,0,0.15); }
+  .popup-title { font-weight:bold; margin-bottom:4px; }
+  .tag { display:inline-block; padding:2px 6px; border-radius:10px; font-size:11px; color:white; }
+  .uni { background:#1f77b4; }
+  .mil { background:#d62728; }
+  .fld { background:#2ca02c; }
+</style>
+</head>
+<body>
+<div id="map"></div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+ integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<script>
+  var map = L.map('map');
+  var tiles = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 18,
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+
+  var bounds = L.latLngBounds([29.42, -122.33], [47.61, -74.0]);
+  map.fitBounds(bounds.pad(0.2));
+
+  function getTag(type) {
+    if (type === 'University') return '<span class="tag uni">University</span>';
+    if (type === 'Military') return '<span class="tag mil">Military</span>';
+    return '<span class="tag fld">Field/Academy</span>';
+  }
+
+  var locations = [{"name": "UC Berkeley \u2013 Environmental Sustainability Certificate", "city": "Berkeley, CA", "lat": 37.87, "lon": -122.27, "type": "University", "duration": "12 weeks", "focus": "Environmental systems, energy, waste", "cost": "$6,200"}, {"name": "George Washington Univ \u2013 Environmental Policy & Compliance", "city": "Washington, DC", "lat": 38.91, "lon": -77.04, "type": "University", "duration": "11 weeks", "focus": "EPA law, NEPA, compliance", "cost": "$5,800"}, {"name": "USC \u2013 Applied Environmental Engineering", "city": "Los Angeles, CA", "lat": 34.05, "lon": -118.24, "type": "University", "duration": "12 weeks", "focus": "Water, pollution control, labs", "cost": "$7,200"}, {"name": "Univ. of Colorado \u2013 Environmental Systems Program", "city": "Boulder, CO", "lat": 40.02, "lon": -105.27, "type": "University", "duration": "10 weeks", "focus": "Ecosystem mgmt, monitoring", "cost": "$6,750"}, {"name": "Univ. of Washington \u2013 Environmental Leadership", "city": "Seattle, WA", "lat": 47.61, "lon": -122.33, "type": "University", "duration": "12 weeks", "focus": "Compliance, field practice", "cost": "$6,900"}, {"name": "Columbia Univ \u2013 Environmental Protection & Regulation", "city": "New York, NY", "lat": 40.71, "lon": -74.0, "type": "University", "duration": "11 weeks", "focus": "Env. law, sustainability", "cost": "$8,400"}, {"name": "USCG Yorktown \u2013 International Maritime Officers Course (IMOC)", "city": "Yorktown, VA", "lat": 37.24, "lon": -76.52, "type": "Military", "duration": "12\u201315 weeks", "focus": "Marine env. protection, spill response", "cost": "IMET/FMS"}, {"name": "USAFSAM \u2013 Aerospace Medicine for Intl Medical Officers", "city": "Wright-Patterson AFB, OH", "lat": 39.83, "lon": -84.05, "type": "Military", "duration": "~23 weeks", "focus": "Preventive & environmental medicine", "cost": "IMET/FMS"}, {"name": "METC \u2013 Preventive Medicine Technician Course", "city": "San Antonio, TX", "lat": 29.42, "lon": -98.49, "type": "Military", "duration": "16\u201324 weeks", "focus": "Env/public health, water & food safety", "cost": "IMET/FMS"}, {"name": "MEDCoE \u2013 Public Health Nursing / Preventive Medicine", "city": "San Antonio, TX", "lat": 29.42, "lon": -98.49, "type": "Military", "duration": "~9 weeks", "focus": "Community & occupational env. health", "cost": "IMET/FMS"}, {"name": "Navy CECOS \u2013 Basic Qualification Course (BQC)", "city": "Port Hueneme, CA", "lat": 34.16, "lon": -119.2, "type": "Military", "duration": "~12 weeks", "focus": "Facilities & env. compliance", "cost": "IMET/FMS"}, {"name": "USAFSAM \u2013 Bioenvironmental Engineering Technician", "city": "Wright-Patterson AFB, OH", "lat": 39.83, "lon": -84.05, "type": "Military", "duration": "~9.5 weeks", "focus": "Sampling, radiation safety, CBRN", "cost": "IMET/FMS"}, {"name": "Rio Hondo College \u2013 Wildland Fire Academy", "city": "Los Angeles Region, CA", "lat": 34.05, "lon": -118.24, "type": "Field/Academy", "duration": "~8 weeks", "focus": "Wildfire response, vegetation mgmt", "cost": "$1,500\u2013$3,000"}, {"name": "Future Fire Academy \u2013 Northern California", "city": "Sacramento, CA", "lat": 38.58, "lon": -121.49, "type": "Field/Academy", "duration": "~8 weeks", "focus": "Fire behavior, field drills", "cost": "Up to $3,000"}, {"name": "ACE Conservation Corps Field Program", "city": "Flagstaff, AZ", "lat": 35.2, "lon": -111.65, "type": "Field/Academy", "duration": "~12 weeks", "focus": "Conservation fieldwork, restoration", "cost": "Stipend"}, {"name": "SCA Conservation Crews / Internships", "city": "Nationwide", "lat": 39.0, "lon": -98.58, "type": "Field/Academy", "duration": "8\u201312 weeks", "focus": "Habitat restoration, park projects", "cost": "Stipend/Housing"}];
+
+  locations.forEach(function(p) {
+    var popup = `
+      <div class="popup">
+        <div class="popup-title">${p.name}</div>
+        <div>${getTag(p.type)} &nbsp; <b>City:</b> ${p.city}</div>
+        <div><b>Duration:</b> ${p.duration}</div>
+        <div><b>Focus:</b> ${p.focus}</div>
+        <div><b>Cost/Funding:</b> ${p.cost}</div>
+      </div>`;
+    L.marker([p.lat, p.lon]).addTo(map).bindPopup(popup);
+  });
+</script>
+</body>
+</html>
